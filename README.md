@@ -1,5 +1,87 @@
 # Feishu Document Layout
 
+An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, automatic heading numbers, task styling, blockquotes and adjustable table columns in Live Preview and Reading view.
+
+[中文说明](#中文说明) · [Example note](example.md) · [Report an issue](https://github.com/GasonW/feishu-document-layout/issues)
+
+This is a community project, unaffiliated with Feishu, Lark or Obsidian. Licensed under the [MIT License](LICENSE).
+
+## Installation
+
+1. Download `main.js`, `manifest.json` and `styles.css` from the [latest GitHub release](https://github.com/GasonW/feishu-document-layout/releases/latest).
+2. Create `.obsidian/plugins/feishu-document-layout/` inside your vault and place the three files there.
+3. Open **Settings → Community plugins**, reload the plugin list and enable **Feishu Document Layout**. Obsidian must allow community plugins in this vault.
+4. Open [example.md](example.md) in Live Preview or Reading view to try the layout.
+
+## Usage
+
+- **Headings:** Write standard `#`, `##` and `###` headings. Numbering is enabled for the entire vault by default and displays `1.`, `1.1` and `1.1.1` in the document and outline. Adding or removing a heading updates subsequent numbers.
+- **Lists:** Use standard Markdown indentation. Ordered lists display decimal, alphabetic and Roman markers; unordered lists display solid circles, hollow circles and squares. Each level adds 24px of indentation.
+- **Blockquotes:** Prefix each line with `>`. Lists and their nested levels render inside the quote border.
+- **Tasks:** Use `- [ ]` and `- [x]`. Completed tasks display muted text, a strikethrough and a blue checkmark.
+- **Tables:** Tables fill the document area up to 820px. Drag a boundary between header cells to resize the neighboring columns. Double-click that boundary to restore automatic widths.
+
+```markdown
+# Chapter
+## Section
+### Topic
+
+> Context
+>
+> - First level
+>   - Second level
+>     - Third level
+>
+> 1. First step
+>    1. Substep
+>       1. Detail
+```
+
+### Heading numbering settings
+
+Change the vault default in **Settings → Feishu Document Layout**. A note's YAML property takes precedence over that default:
+
+```yaml
+---
+heading-numbering: false
+---
+```
+
+Set the property to `true` to enable numbering in that note. The command **Toggle heading numbers in this note** updates this property from either Live Preview or Reading view.
+
+Numbers are visual decorations: heading text and link targets retain their Markdown names. Existing manual prefixes such as `1.` and `1.1` are preserved. Skipped heading levels use the ancestors actually present; a note containing only level-two and level-three headings starts at `1.` and `1.1`.
+
+The active list line shows editable Markdown markers. Move the cursor away to see its formatted marker. Source mode shows the original Markdown.
+
+## Data and privacy
+
+The plugin reads individual files through the Obsidian vault API to determine heading numbers. Settings and column proportions are stored in the plugin's `data.json` inside the vault. The heading-numbering command updates the current note's frontmatter. The plugin makes no network requests and does not access files outside the vault.
+
+## Compatibility and limitations
+
+- Verified on macOS with Obsidian 1.12.7 and Minimal: Live Preview, Reading view, outline updates, nested lists, quote/list composition and table resizing. Mobile and additional themes have not been verified.
+- Numbering covers top-level Markdown headings of levels one through three. Fenced code and YAML do not participate.
+- Column widths are identified by the note path, table headers and the occurrence of matching headers. Editing headers or changing the column count requires resizing again. Virtual scrolling in long notes containing multiple identical table headers remains a known validation limit.
+- Outline and list styling depend on Obsidian's UI structure. Application, theme or other layout-plugin updates may require compatibility adjustments.
+- Other Markdown viewers apply their own heading-numbering and table-width rules.
+
+## Development
+
+Node.js 20 or later is required. The build uses Node.js built-in modules and the runtime uses Obsidian's supplied APIs and CodeMirror modules.
+
+```sh
+npm ci --ignore-scripts
+npm test
+npm run build
+npm run check
+```
+
+`plugin.js` contains the plugin entry source, `editor.js` the editor extension, and `layout.js` the Markdown parsing functions. `build.mjs` generates `dist/main.js` and copies the manifest and stylesheet into `dist/`. GitHub Actions runs tests, a build and a syntax check for pushes and pull requests.
+
+Release tags match `manifest.json`. Release attachments are `dist/main.js`, `dist/manifest.json` and `dist/styles.css`.
+
+## 中文说明
+
 为 Obsidian 提供接近飞书文档的阅读排版：清楚的标题层级、嵌套列表、任务状态、引用、高亮块，以及可调整列宽的表格。实时预览与阅读视图均支持。
 
 An independent Obsidian plugin with document typography inspired by Feishu/Lark: nested lists, heading numbers, task styling, blockquotes and resizable tables.
