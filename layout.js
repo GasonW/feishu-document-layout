@@ -59,17 +59,17 @@ function listRows(text) {
   return rows;
 }
 
-// Display numbers never become part of the Markdown heading or its link target.
 function numberedHeadings(headings) {
-  const stack = [];
+  const counts = [];
   return headings.map(heading => {
-    if (heading.level > 3) return {...heading, label: ''};
-    while (stack.length && stack.at(-1).level > heading.level) stack.pop();
-    if (stack.at(-1)?.level === heading.level) stack.at(-1).count++;
-    else stack.push({level:heading.level, count:1});
-    const manual = /^(?:\d+\.)+(?:\d+)?[.、]?\s/.test(heading.text);
-    const label = manual ? '' : stack.map(h=>h.count).join('.') + (stack.length === 1 ? '.' : '');
-    return {...heading, label};
+    const marker = heading.level <= 3 && heading.text.match(/^(\d{1,9})[.)](?:[ \t]+|$)/);
+    if (!marker) return {...heading, label: '', marker: ''};
+    const depth = heading.level - 1;
+    for (let i = 0; i < depth; i++) if (counts[i] === undefined) counts[i] = 1;
+    counts[depth] = counts[depth] === undefined ? Number(marker[1]) : counts[depth] + 1;
+    counts.length = heading.level;
+    const label = counts.join('.') + (heading.level === 1 ? '.' : '');
+    return {...heading, label, marker: marker[0], to: heading.from + marker[0].length};
   });
 }
 
@@ -87,7 +87,7 @@ function headingRows(text) {
     if(atx){
       const content=atx[2]||'';
       headings.push({line:index+1,start,from:start+raw.length-content.length,level:atx[1].length,text:content.replace(/[ \t]+#+[ \t]*$/,'')});
-    } else if(raw.trim() && !/^(?: {4}|\t|\s*[-+*>#])/.test(raw) && /^ {0,3}(=+|-+)\s*$/.test(lines[index+1]||'')) {
+    } else if(raw.trim() && !/^(?: {4}|\t|\s*[-+*>#]| {0,3}\d{1,9}[.)]\s)/.test(raw) && /^ {0,3}(=+|-+)\s*$/.test(lines[index+1]||'')) {
       headings.push({line:index+1,start,from:start,level:lines[index+1].trim()[0]==='='?1:2,text:raw.trim()});
       offset+=lines[++index].length+1;
     }

@@ -1,6 +1,6 @@
 # Feishu Document Layout
 
-An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, automatic heading numbers, task styling, blockquotes and adjustable table columns in Live Preview and Reading view.
+An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, ordered heading numbers, task styling, blockquotes and adjustable table columns in Live Preview and Reading view.
 
 [中文说明](#中文说明) · [Example note](example.md) · [Report an issue](https://github.com/GasonW/feishu-document-layout/issues)
 
@@ -15,16 +15,16 @@ This is a community project, unaffiliated with Feishu, Lark or Obsidian. License
 
 ## Usage
 
-- **Headings:** Write standard `#`, `##` and `###` headings. Numbering is enabled for the entire vault by default and displays `1.`, `1.1` and `1.1.1` in the document and outline. Adding or removing a heading updates subsequent numbers.
+- **Ordered headings:** Write `# 1. Chapter`, `## 1. Section` and `### 1. Topic` to display `1.`, `1.1` and `1.1.1` in the document and outline. These markers form a sequence: repeated `1.` markers advance sibling numbers. Ordinary headings such as `# Chapter` retain their normal appearance. Adding or removing an ordered heading updates subsequent numbers.
 - **Lists:** Use standard Markdown indentation. Ordered lists display decimal, alphabetic and Roman markers; unordered lists display solid circles, hollow circles and squares. Each level adds 24px of indentation.
 - **Blockquotes:** Prefix each line with `>`. Lists and their nested levels render inside the quote border.
 - **Tasks:** Use `- [ ]` and `- [x]`. Completed tasks display muted text, a strikethrough and a blue checkmark.
 - **Tables:** Tables fill the document area up to 820px. Drag a boundary between header cells to resize the neighboring columns. Double-click that boundary to restore automatic widths.
 
 ```markdown
-# Chapter
-## Section
-### Topic
+# 1. Chapter
+## 1. Section
+### 1. Topic
 
 > Context
 >
@@ -37,9 +37,9 @@ This is a community project, unaffiliated with Feishu, Lark or Obsidian. License
 >       1. Detail
 ```
 
-### Heading numbering settings
+### Ordered heading settings
 
-Change the vault default in **Settings → Feishu Document Layout**. A note's YAML property takes precedence over that default:
+Enable rendering of ordered heading markers in **Settings → Feishu Document Layout**. This capability is enabled by default. A note's YAML property takes precedence over that setting:
 
 ```yaml
 ---
@@ -47,11 +47,11 @@ heading-numbering: false
 ---
 ```
 
-Set the property to `true` to enable numbering in that note. The command **Toggle heading numbers in this note** updates this property from either Live Preview or Reading view.
+Set the property to `true` to enable numbering in that note. The command **Toggle numbered heading rendering in this note** updates this property from either Live Preview or Reading view.
 
-Numbers are visual decorations: heading text and link targets retain their Markdown names. Existing manual prefixes such as `1.` and `1.1` are preserved. Skipped heading levels use the ancestors actually present; a note containing only level-two and level-three headings starts at `1.` and `1.1`.
+The source marker is rendered as a hierarchical number. Markdown text and link targets retain their original names. Ordinary headings do not advance or reset this sequence. The first marker at each level sets its starting value; `# 3. Chapter` starts at `3.`. Missing numbered ancestors start at `1`, so `## 1. Section` starts at `1.1`. Fixed prefixes such as `1.1` remain literal. Escape a literal list-like prefix as `1\. Text`.
 
-The active list line shows editable Markdown markers. Move the cursor away to see its formatted marker. Source mode shows the original Markdown.
+The active list or ordered heading line shows editable Markdown markers. Move the cursor away to see its formatted marker. Source mode shows the original Markdown.
 
 ## Data and privacy
 
@@ -90,16 +90,16 @@ An independent Obsidian plugin with document typography inspired by Feishu/Lark:
 
 ## 使用
 
-1. 一级、二级、三级标题使用标准 `#`、`##`、`###`。默认在整个库显示 `1.`、`1.1`、`1.1.1`，并同步到大纲。新增、删除标题后自动重排。
+1. 在需要编号的标题中写 `# 1. 章节`、`## 1. 小节`、`### 1. 主题`，正文与大纲显示 `1.`、`1.1`、`1.1.1`。同级标题可以重复写 `1.`，显示编号会连续递增。普通标题使用 `# 章节`。
 2. 嵌套有序列表使用标准数字语法，显示为数字、字母、罗马数字。无序列表显示实心圆、空心圆、方形，每级缩进 24px。
 3. 引用行前加 `>`，内部可以继续使用列表和逐级缩进。
 4. 表格默认填满正文区域，最大 820px。拖动表头列分隔线调整相邻列比例；双击恢复默认。
 5. 已完成的任务显示灰色文字、删除线及蓝色勾选。
 
 ```markdown
-# 章节
-## 小节
-### 主题
+# 1. 章节
+## 1. 小节
+### 1. 主题
 
 > 引用说明
 >
@@ -112,15 +112,15 @@ An independent Obsidian plugin with document typography inspired by Feishu/Lark:
 >       1. 具体操作
 ```
 
-标题编号由显示层生成，Markdown 内容与标题链接保持原来的名称。已有 `1.` 或 `1.1` 前缀的标题保持手动编号。标题跳级时按实际存在的父级连续编号；只有二、三级标题的笔记从 `1.`、`1.1` 开始。
+有序标记在显示层替换成层级编号，Markdown 内容与标题链接保持原来的名称。普通标题不参与计数，也不打断编号。每级第一次出现的标记决定起始值，例如 `# 3. 章节` 从 `3.` 开始；缺失的父级按 `1` 计，因此 `## 1. 小节` 从 `1.1` 开始。已有 `1.1` 这样的多级文本前缀保持原样；要显示字面量 `1.`，可写成 `1\.`。
 
-在插件设置中调整全库默认值。单篇笔记的 YAML 属性优先于全库设置：
+插件默认启用标题有序标记的渲染能力。可在设置中调整，单篇笔记的 YAML 属性优先于全库设置：
 
 ```yaml
 heading-numbering: false
 ```
 
-也可以运行命令 **Toggle heading numbers in this note** 切换该属性。光标所在列表行显示可编辑的 Markdown 标记；移开光标即可查看排版效果。
+也可以运行命令 **Toggle numbered heading rendering in this note** 切换该属性。光标所在列表或编号标题行显示可编辑的 Markdown 标记；移开光标即可查看排版效果。
 
 ## 安装
 

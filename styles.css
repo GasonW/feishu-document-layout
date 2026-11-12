@@ -193,10 +193,14 @@ body.feishu-document-layout.feishu-column-resizing * { cursor: col-resize !impor
 }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ol > li::before { content: counter(list-item, decimal) "."; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ol ol > li::before { content: counter(list-item, lower-alpha) "."; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ol ol ol > li::before { content: counter(list-item, lower-roman) "."; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ul > li:not(.task-list-item)::before { content: "•"; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ul ul > li:not(.task-list-item)::before { content: "◦"; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ul ul ul > li:not(.task-list-item)::before { content: "▪"; }body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered.show-indentation-guide li > :is(ul,ol)::before { display: none; }
 
 body.feishu-document-layout .feishu-heading-number {
-  color: inherit; font: inherit; user-select: none;
+  color: var(--doc-link); font: inherit; user-select: none;
 }
+body.feishu-document-layout .feishu-heading-source { display: none; }
 body.feishu-document-layout [data-feishu-number]::before {
   content: attr(data-feishu-number) " "; font: inherit; color: inherit;
+}
+body.feishu-document-layout .markdown-rendered :is(h1,h2,h3)[data-feishu-number]::before {
+  color: var(--doc-link);
 }
 body.feishu-document-layout .markdown-source-view.mod-cm6 .feishu-list-marker[data-kind="bullet"]::before,
 body.feishu-document-layout .workspace-leaf-content[data-type="markdown"] .markdown-rendered ul > li:not(.task-list-item)::before {

@@ -44,7 +44,9 @@ function documentExtension(plugin) {
         }
       }
       for(const row of this.headings)if(row.label && visible(row)) {
-        ranges.push(Decoration.widget({widget:new HeadingNumber(row.label),side:-1}).range(row.from));
+        const line=view.state.doc.line(row.line);
+        const editing=view.state.selection.ranges.some(r=>r.from<=line.to && r.to>=line.from);
+        if(!editing)ranges.push(Decoration.replace({widget:new HeadingNumber(row.label)}).range(row.from,row.to));
       }
       this.decorations=Decoration.set(ranges,true);
     }
