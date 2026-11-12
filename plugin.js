@@ -7,7 +7,7 @@ module.exports = class FeishuDocumentLayout extends Plugin {
     document.body.classList.add('feishu-document-layout');
     this.registerEditorExtension(documentExtension(this));
     this.addSettingTab(new LayoutSettings(this.app,this));
-    this.addCommand({id:'toggle-heading-numbering',name:'Toggle heading numbers in this note',checkCallback:checking=>{
+    this.addCommand({id:'toggle-heading-numbering',name:'Toggle numbered heading rendering in this note',checkCallback:checking=>{
       const file=this.app.workspace.getActiveViewOfType(MarkdownView)?.file;
       if(!file)return false;
       if(!checking)void this.toggleNote(file);
@@ -42,7 +42,7 @@ module.exports = class FeishuDocumentLayout extends Plugin {
       observer.disconnect();clearTimeout(this.timer);
       document.body.classList.remove('feishu-column-resizing','feishu-document-layout');
       if(this.hoverCell)this.hoverCell.style.cursor='';
-      this.app.workspace.containerEl.querySelectorAll('[data-feishu-number]').forEach(el=>delete el.dataset.feishuNumber);
+      this.app.workspace.containerEl.querySelectorAll('[data-feishu-number]').forEach(el=>this.applyHeadingNumber(el,null));
       this.app.workspace.containerEl.querySelectorAll('.feishu-sized-table').forEach(table=>this.clearWidth(table));
     });
     this.app.workspace.onLayoutReady(()=>this.schedule());
@@ -54,10 +54,31 @@ module.exports = class FeishuDocumentLayout extends Plugin {
   }
   schedule() { clearTimeout(this.timer);this.timer=setTimeout(()=>{this.applySaved();this.updateReading();void this.updateOutline();},80); }
   decorateHeading(heading,ctx,model) {
-    delete heading.dataset.feishuNumber;
     const section=ctx.getSectionInfo(heading);
     const row=model.headings.find(h=>section && h.line-1>=section.lineStart && h.line-1<=section.lineEnd && h.level===Number(heading.tagName[1]) && this.plain(h.text)===this.plain(heading.textContent));
-    if(row?.label && model.enabled)heading.dataset.feishuNumber=row.label;
+    this.applyHeadingNumber(heading,model.enabled?row:null);
+  }
+  applyHeadingNumber(element,row) {
+    if(!row?.label) {
+      delete element.dataset.feishuNumber;
+      element.querySelectorAll('.feishu-heading-source').forEach(span=>span.replaceWith(...span.childNodes));
+      return;
+    }
+    element.dataset.feishuNumber=row.label;
+    if(element.querySelector('.feishu-heading-source'))return;
+    const marker=element.textContent.match(/^\d{1,9}[.)](?:[ \t]+|$)/)?.[0];
+    if(!marker)return;
+    const walker=element.ownerDocument.createTreeWalker(element,NodeFilter.SHOW_TEXT),nodes=[];
+    while(walker.nextNode())nodes.push(walker.currentNode);
+    let remaining=marker.length;
+    for(const node of nodes) {
+      if(!remaining)break;
+      const length=Math.min(remaining,node.length);
+      if(!length)continue;
+      const range=element.ownerDocument.createRange();range.setStart(node,0);range.setEnd(node,length);
+      const span=element.ownerDocument.createElement('span');span.className='feishu-heading-source';
+      range.surroundContents(span);remaining-=length;
+    }
   }
   updateReading() {
     const models=new Map();
@@ -81,11 +102,10 @@ module.exports = class FeishuDocumentLayout extends Plugin {
     for(const leaf of this.app.workspace.getLeavesOfType('outline')) {
       const rows=[...model.headings];
       for(const item of leaf.view.containerEl.querySelectorAll('.tree-item-inner')) {
-        delete item.dataset.feishuNumber;
         const index=rows.findIndex(h=>this.plain(h.text)===this.plain(item.textContent));
-        if(index<0)continue;
+        if(index<0){this.applyHeadingNumber(item,null);continue;}
         const row=rows.splice(index,1)[0];
-        if(model.enabled && row.label)item.dataset.feishuNumber=row.label;
+        this.applyHeadingNumber(item,model.enabled?row:null);
       }
     }
   }
@@ -181,7 +201,7 @@ module.exports = class FeishuDocumentLayout extends Plugin {
 class LayoutSettings extends PluginSettingTab {
   display() {
     this.containerEl.empty();
-    new Setting(this.containerEl).setName('标题自动编号').setDesc('整个库默认显示 1.、1.1、1.1.1。单篇笔记可用 heading-numbering 属性覆盖。').addToggle(toggle=>toggle.setValue(this.plugin.numberHeadings).onChange(async value=>{
+    new Setting(this.containerEl).setName('渲染标题有序编号').setDesc('将 # 1.、## 1.、### 1. 按标题层级显示为 1.、1.1、1.1.1。在需要编号的标题中输入有序标记即可。').addToggle(toggle=>toggle.setValue(this.plugin.numberHeadings).onChange(async value=>{
       this.plugin.numberHeadings=value;await this.plugin.persist();this.plugin.refresh();
     }));
   }

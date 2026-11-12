@@ -1,9 +1,9 @@
 {
   "id": "feishu-document-layout",
   "name": "Feishu Document Layout",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "minAppVersion": "1.12.7",
-  "description": "Style documents with nested lists, automatic heading numbers and adjustable table columns.",
+  "description": "Style documents with nested lists, ordered heading numbers and adjustable table columns.",
   "author": "GasonW",
   "isDesktopOnly": false,
   "authorUrl": "https://github.com/GasonW"
