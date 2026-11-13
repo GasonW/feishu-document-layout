@@ -1,19 +1,53 @@
 # Feishu Document Layout
 
-An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, ordered heading numbers, task styling, blockquotes, adjustable table columns and image rows with captions in Live Preview and Reading view.
+Give your Markdown notes the clarity of a document: distinct headings, readable lists, spacious tables and image rows with captions. Inspired by Feishu/Lark, with support for Live Preview and Reading view.
 
-[中文说明](#中文说明) · [Example note](example.md) · [Report an issue](https://github.com/GasonW/feishu-document-layout/issues)
+[**Install from the community directory**](https://community.obsidian.md/plugins/feishu-document-layout) · [中文说明](#中文说明) · [Example note](example.md)
 
-This is a community project, unaffiliated with Feishu, Lark or Obsidian. Licensed under the [MIT License](LICENSE).
+## See the layout
 
-This is a layout plugin that works with your selected Obsidian theme. Minimal is optional. The theme continues to style application controls and properties that the plugin does not override.
+### A clear hierarchy, from the big idea to the details
+
+Headings stand apart from body text. Ordered headings show `1.`, `1.1` and `1.1.1`; nested lists use distinct markers at each level. Quotes and callouts keep supporting information easy to find.
+
+![Obsidian with numbered headings, three-level ordered and unordered lists, a quote and a highlighted callout](assets/structure.jpg)
+
+### Images that tell a story together
+
+Drag images into a row, reorder them or give one its own row. Images keep their proportions, and editable captions stay with each image.
+
+![Three images of different proportions aligned in one row, with individual captions underneath](assets/images-and-captions.jpg)
+
+### Space for information and action
+
+Completed tasks fade into the background. Tables fill the document width with adjustable columns, while code blocks and dividers give each section a clear boundary.
+
+![Completed and pending tasks, a full-width table, a divider and a code example with comfortable spacing](assets/tables-and-focus.jpg)
+
+*Actual screenshots of version 1.2.0 in Obsidian 1.12.7 on macOS, using the default light theme and this plugin. The examples use sample content. Minimal is optional.*
 
 ## Installation
+
+1. Open the [community listing](https://community.obsidian.md/plugins/feishu-document-layout) and click **Add to Obsidian**. Allow your browser to open Obsidian if prompted.
+2. In Obsidian, choose **Install**, then **Enable**.
+3. Open a note in **Live Preview** or **Reading view** to see the layout.
+
+You can also install from inside Obsidian: **Settings → Community plugins → Browse**, search for **Feishu Document Layout**, then select **Install → Enable**. If prompted, turn on community plugins first.
+
+For future updates, use **Settings → Community plugins → Check for updates**. Try the Markdown in [example.md](example.md) in a note of your own.
+
+<details>
+<summary>Manual installation from GitHub</summary>
 
 1. Download `main.js`, `manifest.json` and `styles.css` from the [latest GitHub release](https://github.com/GasonW/feishu-document-layout/releases/latest).
 2. Create `.obsidian/plugins/feishu-document-layout/` inside your vault and place the three files there.
 3. Open **Settings → Community plugins**, reload the plugin list and enable **Feishu Document Layout**. Obsidian must allow community plugins in this vault.
-4. Open [example.md](example.md) in Live Preview or Reading view to try the layout.
+
+</details>
+
+This is a layout plugin that works with your selected Obsidian theme. The theme continues to style application controls and properties that the plugin does not override.
+
+This community project is unaffiliated with Feishu, Lark or Obsidian. Licensed under the [MIT License](LICENSE). [Report an issue](https://github.com/GasonW/feishu-document-layout/issues).
 
 ## Usage
 
@@ -92,6 +126,31 @@ Release tags match `manifest.json`. Release attachments are `dist/main.js`, `dis
 
 为 Obsidian 提供接近飞书文档的阅读排版：清楚的标题层级、嵌套列表、任务状态、引用、高亮块、可调整列宽的表格，以及支持拖拽并排和图注的图片。实时预览与阅读视图均支持。
 
+[**从社区目录安装**](https://community.obsidian.md/plugins/feishu-document-layout) · [查看上方实机截图](#see-the-layout)
+
+- **层级更清楚：** 标题与正文拉开层次，编号标题显示 `1.`、`1.1`、`1.1.1`，三级列表使用不同标记。
+- **图片更好组织：** 拖拽并排、调整顺序或拆行；同排等高并保留原始比例，图注跟随图片移动。
+- **信息更易扫读：** 已完成任务变灰，表格列宽可调，引用、高亮块、代码块和分割线各有清晰边界。
+
+上方三张截图来自 macOS 上的 Obsidian 1.12.7、插件 1.2.0，使用默认浅色主题和公开样例内容。
+
+## 安装
+
+1. 打开[社区插件页面](https://community.obsidian.md/plugins/feishu-document-layout)，点击 **Add to Obsidian**；浏览器询问时允许打开 Obsidian。
+2. 在 Obsidian 中点击 **安装 → 启用**。
+3. 打开任意笔记，切换到**实时预览**或**阅读视图**即可使用。
+
+也可以直接在 Obsidian 的 **设置 → 第三方插件 → 浏览** 中搜索 **Feishu Document Layout**，再安装并启用。首次使用时，按提示开启第三方插件。
+
+后续通过 **设置 → 第三方插件 → 检查更新** 获取新版本。完整示例见 [example.md](example.md)。
+
+<details>
+<summary>从 GitHub 手动安装</summary>
+
+从 [GitHub Releases](https://github.com/GasonW/feishu-document-layout/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`，放进库内 `.obsidian/plugins/feishu-document-layout/`，重新加载第三方插件并启用 **Feishu Document Layout**。
+
+</details>
+
 这是独立开发的社区插件，与飞书、Lark 或 Obsidian 官方无关联。采用 [MIT 许可证](LICENSE)。
 
 它是叠加在当前 Obsidian 主题上的排版插件，Minimal 是可选主题。侧栏、应用控件，以及插件未覆盖的属性仍采用所选主题的样式。
@@ -131,12 +190,6 @@ heading-numbering: false
 ```
 
 也可以运行命令 **Toggle numbered heading rendering in this note** 切换该属性。光标所在列表或编号标题行显示可编辑的 Markdown 标记；移开光标即可查看排版效果。
-
-## 安装
-
-从 [GitHub Releases](https://github.com/GasonW/feishu-document-layout/releases/latest) 下载 `main.js`、`manifest.json`、`styles.css`，放进库内 `.obsidian/plugins/feishu-document-layout/`，重新加载第三方插件并启用 **Feishu Document Layout**。所有样式随插件一起加载。
-
-完整示例见 [example.md](example.md)。问题反馈请使用 [Issues](https://github.com/GasonW/feishu-document-layout/issues)。
 
 ## 本地构建与检查
 
