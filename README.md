@@ -91,9 +91,25 @@ The source marker is rendered as a hierarchical number. Markdown text and link t
 
 The active list or ordered heading line shows editable Markdown markers. Move the cursor away to see its formatted marker. Source mode shows the original Markdown.
 
+### Creation time
+
+New Markdown notes automatically receive a `created` property in their YAML frontmatter:
+
+```yaml
+---
+created: 2026-11-13T15:55:27
+---
+```
+
+The value uses the file's creation time in your local timezone. Editing or renaming a note keeps the recorded value. Any existing `created` property is preserved, including an empty one. You can select **Date & time** from the property's type menu in Obsidian.
+
+To fill existing notes, use **Settings → Feishu Document Layout → 补全全库**, or run **Fill missing creation times in all notes** from the command palette. **Add creation time to this note** fills only the active note. These actions preserve existing values and report the number of notes updated or skipped; invalid YAML is left for you to correct. The **自动记录创建时间** toggle controls future automatic recording. Opening a vault does not bulk-update its notes.
+
+For imported, copied or synced files, the current filesystem creation time may differ from the original writing date. Once recorded in YAML, the value travels with the note. Obsidian's frontmatter API may normalize YAML formatting when adding the property; the body and existing property values are retained.
+
 ## Data and privacy
 
-The plugin reads individual files through the Obsidian vault API to determine heading numbers and image rows. Settings and column proportions are stored in the plugin's `data.json` inside the vault. The heading-numbering command updates the current note's frontmatter. Image dragging rearranges the original Markdown embeds; captions are stored beside each embed in an HTML comment containing an image ID and caption text. These changes travel with the note when it is synced. Live Preview edits use the editor's undo history.
+The plugin reads individual files through the Obsidian vault API to determine heading numbers and image rows. Settings and column proportions are stored in the plugin's `data.json` inside the vault. The heading-numbering command updates the current note's frontmatter. Creation-time recording adds a missing `created` property to new notes or notes selected by a fill command. Image dragging rearranges the original Markdown embeds; captions are stored beside each embed in an HTML comment containing an image ID and caption text. These changes travel with the note when it is synced. Live Preview image edits use the editor's undo history.
 
 Local images are loaded through Obsidian's vault API. Images whose Markdown source uses an HTTP(S) URL load from that URL. The plugin has no telemetry or external service account and does not access files outside the vault.
 
@@ -118,7 +134,7 @@ npm run build
 npm run check
 ```
 
-`plugin.js` contains the plugin entry source, `editor.js` the document editor extension, and `layout.js` the document parsing functions. `images.js` handles image Markdown edits and `image-view.js` supplies the image interaction UI. `build.mjs` generates `dist/main.js` and copies the manifest and stylesheet into `dist/`. GitHub Actions runs tests, a build and a syntax check for pushes and pull requests.
+`plugin.js` contains the plugin entry source, `editor.js` the document editor extension, and `layout.js` the document parsing functions. `images.js` handles image Markdown edits and `image-view.js` supplies the image interaction UI. `metadata.js` records file creation times. `build.mjs` generates `dist/main.js` and copies the manifest and stylesheet into `dist/`. GitHub Actions runs tests, a build and a syntax check for pushes and pull requests.
 
 Release tags match `manifest.json`. Release attachments are `dist/main.js`, `dist/manifest.json` and `dist/styles.css`.
 
@@ -191,6 +207,14 @@ heading-numbering: false
 
 也可以运行命令 **Toggle numbered heading rendering in this note** 切换该属性。光标所在列表或编号标题行显示可编辑的 Markdown 标记；移开光标即可查看排版效果。
 
+### 创建时间
+
+新建 Markdown 笔记时，插件默认将文件创建时间写入顶部的 YAML 属性，例如 `created: 2026-11-13T15:55:27`，采用本地时区。编辑正文或重命名后时间保持不变；已有 `created`（包括留空的值）会保留。可在 Obsidian 的属性类型菜单中将它设为「日期与时间」。
+
+已有笔记可在 **设置 → Feishu Document Layout → 补全全库** 中处理，或运行命令 **Fill missing creation times in all notes**。只补全当前笔记可用 **Add creation time to this note**。补全结束会显示新增、保留及失败数量；YAML 无效的笔记会跳过。设置中的「自动记录创建时间」控制后续自动记录，打开库时不会自动批量改写旧笔记。
+
+导入、复制或同步过的文件，其当前文件创建时间可能与最初写作时间不同。记录到 YAML 后会随笔记同步。添加属性时，Obsidian 可能整理 YAML 格式，正文及已有属性值会保留。
+
 ## 本地构建与检查
 
 需要 Node.js 20 或以上，构建使用 Node.js 内置库。
@@ -201,7 +225,7 @@ node build.mjs
 node --check dist/main.js
 ```
 
-运行时使用 Obsidian 提供的 API 与 CodeMirror。插件设置及列宽保存在库内的插件 `data.json`。切换单篇编号属性会写入 frontmatter；拖动图片会调整原有 Markdown 图片的位置；图注及图片标识保存在紧随图片的 HTML 注释中，随笔记同步。实时预览中的修改进入编辑器撤销历史。
+运行时使用 Obsidian 提供的 API 与 CodeMirror。插件设置及列宽保存在库内的插件 `data.json`。切换单篇编号属性会写入 frontmatter；创建时间功能为新笔记或补全命令处理的笔记添加缺失的 `created` 属性；拖动图片会调整原有 Markdown 图片的位置；图注及图片标识保存在紧随图片的 HTML 注释中，随笔记同步。实时预览中的图片修改进入编辑器撤销历史。
 
 本地图片通过 Obsidian 库 API 加载，HTTP(S) 图片按正文中的原地址加载。插件不收集遥测，不需要外部服务账号，也不读取库外文件。
 
@@ -217,6 +241,6 @@ node --check dist/main.js
 
 ## 开发与发布
 
-入口源码为 `plugin.js`，文档编辑器扩展为 `editor.js`，文档解析为 `layout.js`；图片解析及正文修改为 `images.js`，交互界面为 `image-view.js`。`build.mjs` 生成 `dist/main.js`，并复制 manifest 与样式文件。
+入口源码为 `plugin.js`，文档编辑器扩展为 `editor.js`，文档解析为 `layout.js`；图片解析及正文修改为 `images.js`，交互界面为 `image-view.js`，创建时间记录为 `metadata.js`。`build.mjs` 生成 `dist/main.js`，并复制 manifest 与样式文件。
 
 每个 Release 的标签与 manifest 版本一致，附件为 `dist/main.js`、`dist/manifest.json`、`dist/styles.css`。GitHub Actions 在提交及 Pull Request 上运行测试与构建检查。
