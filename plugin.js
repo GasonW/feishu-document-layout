@@ -3,10 +3,12 @@ module.exports = class FeishuDocumentLayout extends Plugin {
     const data=await this.loadData();
     this.widths=data?.widths||{};
     this.numberHeadings=data?.numberHeadings??true;
+    this.recordCreationTime=data?.recordCreationTime??true;
     this.editors=new Set();this.documents=new Map();this.headingContexts=new WeakMap();
     document.body.classList.add('feishu-document-layout');
     this.registerEditorExtension(documentExtension(this));
     this.images=new ImageLayouts(this);this.images.load();
+    this.creationMetadata=new CreationMetadata(this);this.creationMetadata.load();
     this.addSettingTab(new LayoutSettings(this.app,this));
     this.addCommand({id:'toggle-heading-numbering',name:'Toggle numbered heading rendering in this note',checkCallback:checking=>{
       const file=this.app.workspace.getActiveViewOfType(MarkdownView)?.file;
@@ -48,7 +50,7 @@ module.exports = class FeishuDocumentLayout extends Plugin {
     });
     this.app.workspace.onLayoutReady(()=>this.schedule());
   }
-  persist() { return this.saveData({widths:this.widths,numberHeadings:this.numberHeadings}); }
+  persist() { return this.saveData({widths:this.widths,numberHeadings:this.numberHeadings,recordCreationTime:this.recordCreationTime}); }
   async toggleNote(file) {
     const model=await this.document(file.path);
     if(model)await this.app.fileManager.processFrontMatter(file,f=>{f['heading-numbering']=!model.enabled;});
@@ -204,6 +206,12 @@ class LayoutSettings extends PluginSettingTab {
     this.containerEl.empty();
     new Setting(this.containerEl).setName('渲染标题有序编号').setDesc('将 # 1.、## 1.、### 1. 按标题层级显示为 1.、1.1、1.1.1。在需要编号的标题中输入有序标记即可。').addToggle(toggle=>toggle.setValue(this.plugin.numberHeadings).onChange(async value=>{
       this.plugin.numberHeadings=value;await this.plugin.persist();this.plugin.refresh();
+    }));
+    new Setting(this.containerEl).setName('自动记录创建时间').setDesc('为新建的 Markdown 笔记添加 created 属性，使用文件创建时间和本地时区。保留已有属性；旧笔记可用 Add creation time to this note 命令补全。').addToggle(toggle=>toggle.setValue(this.plugin.recordCreationTime).onChange(async value=>{
+      this.plugin.recordCreationTime=value;await this.plugin.persist();
+    }));
+    new Setting(this.containerEl).setName('补全已有笔记的创建时间').setDesc('为库内缺少 created 属性的 Markdown 笔记补全时间。采用当前文件的创建时间；导入或复制过的文件可能与最初写作时间不同。').addButton(button=>button.setButtonText('补全全库').onClick(async()=>{
+      button.setDisabled(true);try {await this.plugin.creationMetadata.fillMissing();}finally {button.setDisabled(false);}
     }));
   }
   constructor(app,plugin){super(app,plugin);this.plugin=plugin;}
