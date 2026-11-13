@@ -18,11 +18,6 @@ function documentExtension(plugin) {
       const text=view.state.doc.toString();
       this.rows=listRows(text);
       this.headings=numberingEnabled(text,plugin.numberHeadings)?headingRows(text):[];
-      this.emptyQuotes=[];
-      for(let i=1;i<=view.state.doc.lines;i++) {
-        const line=view.state.doc.line(i);
-        if(/^(?:[ \t]*>[ \t]*)+$/.test(line.text))this.emptyQuotes.push({line:i,start:line.from});
-      }
     }
     update(update) {
       if(update.docChanged || update.transactions.some(t=>t.effects.some(e=>e.is(refreshLayout))))this.parse(update.view);
@@ -33,7 +28,6 @@ function documentExtension(plugin) {
       if(!view.state.field(editorLivePreviewField,false)){this.decorations=Decoration.none;return;}
       const active=new Set(view.state.selection.ranges.map(r=>view.state.doc.lineAt(r.head).number));
       const visible=row=>view.visibleRanges.some(r=>row.start>=r.from && row.start<=r.to);
-      for(const row of this.emptyQuotes)if(visible(row) && !active.has(row.line))ranges.push(Decoration.line({class:'feishu-empty-quote'}).range(row.start));
       for(const row of this.rows) {
         if(!visible(row))continue;
         ranges.push(Decoration.line({class:'feishu-list-line'+(row.quote?' feishu-quote-list':''),attributes:{style:`--feishu-list-depth:${row.depth};--feishu-quote-depth:${row.quote}`}}).range(row.start));
