@@ -6,6 +6,7 @@ module.exports = class FeishuDocumentLayout extends Plugin {
     this.editors=new Set();this.documents=new Map();this.headingContexts=new WeakMap();
     document.body.classList.add('feishu-document-layout');
     this.registerEditorExtension(documentExtension(this));
+    this.images=new ImageLayouts(this);this.images.load();
     this.addSettingTab(new LayoutSettings(this.app,this));
     this.addCommand({id:'toggle-heading-numbering',name:'Toggle numbered heading rendering in this note',checkCallback:checking=>{
       const file=this.app.workspace.getActiveViewOfType(MarkdownView)?.file;

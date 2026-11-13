@@ -1,4 +1,93 @@
 /* Document layout styles, active while the plugin is enabled. */
+body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-content > .feishu-image-row,
+body.feishu-document-layout .markdown-rendered .feishu-image-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  width: 100%;
+  margin: 12px 0;
+  clear: both;
+}
+.feishu-image-row .feishu-image-card {
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  position: relative;
+}
+.feishu-image-surface { position: relative; cursor: grab; }
+.feishu-image-row img.feishu-layout-image {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  height: auto;
+  margin: 0;
+  border-radius: 3px;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.feishu-image-toolbar {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: flex;
+  gap: 2px;
+  padding: 3px;
+  background: var(--background-primary);
+  border: 1px solid var(--background-modifier-border);
+  border-radius: 6px;
+  box-shadow: 0 2px 8px #0002;
+  opacity: 0;
+  transition: opacity 100ms;
+}
+.feishu-image-card:hover .feishu-image-toolbar,
+.feishu-image-card:focus-within .feishu-image-toolbar { opacity: 1; }
+.feishu-image-toolbar .feishu-image-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 4px;
+  box-shadow: none;
+  background: transparent;
+  color: var(--text-muted);
+}
+.feishu-image-button:hover { background: var(--background-modifier-hover); color: var(--text-normal); }
+.feishu-image-button svg { width: 17px; height: 17px; }
+.feishu-image-caption {
+  margin: 8px 0 0;
+  padding: 0 4px;
+  color: var(--text-muted);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  cursor: text;
+}
+.feishu-image-caption textarea.feishu-image-caption-input {
+  display: block;
+  width: 100%;
+  min-height: 28px;
+  padding: 3px 5px;
+  margin: 0;
+  resize: none;
+  overflow: hidden;
+  border: 1px solid var(--interactive-accent);
+  border-radius: 3px;
+  background: var(--background-primary);
+  color: var(--text-muted);
+  font: inherit;
+  text-align: center;
+  line-height: inherit;
+}
+.feishu-image-missing { display: block; padding: 28px 12px; background: var(--background-secondary); color: var(--text-muted); }
+.feishu-image-card.is-dragging { opacity: .45; }
+body.feishu-image-dragging { cursor: grabbing; user-select: none; }
+.feishu-image-drop-indicator { position: fixed; background: #3370ff; pointer-events: none; z-index: 10000; border-radius: 2px; }
+.feishu-image-drag-hint { position: fixed; padding: 6px 10px; border-radius: 5px; background: #1f2329; color: #fff; font-size: 12px; pointer-events: none; z-index: 10001; }
+@media (hover: none) { .feishu-image-toolbar { opacity: 1; } }
+@media print { .feishu-image-toolbar { display: none; } }
 body.feishu-document-layout {
   --doc-font: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Tahoma, "PingFang SC", "Microsoft YaHei", Arial, "Hiragino Sans GB", sans-serif;
   --font-text-theme: var(--doc-font);
@@ -141,13 +230,22 @@ body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-inline-code {
   margin: 16px 0; padding: 16px;
   border: 1px solid var(--doc-border); border-radius: 8px;
   background: var(--doc-code); line-height: 1.6;
+}body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-preview-code-block pre {
+  margin-block: 16px;
+}body.feishu-document-layout .markdown-source-view.mod-cm6 .HyperMD-codeblock-begin {
+  border-top: 16px solid transparent;
+  border-top-left-radius: 8px 24px;
+  border-top-right-radius: 8px 24px;
+  background-clip: padding-box;
+}body.feishu-document-layout .markdown-source-view.mod-cm6 .HyperMD-codeblock-end {
+  border-bottom: 16px solid transparent;
+  border-bottom-left-radius: 8px 24px;
+  border-bottom-right-radius: 8px 24px;
+  background-clip: padding-box;
 }body.feishu-document-layout .markdown-rendered pre code { padding: 0; background: transparent; color: inherit; }body.feishu-document-layout .markdown-rendered table {
   width: 100%; margin: 16px 0; border-collapse: collapse;
   border: 1px solid var(--doc-border); border-radius: 0; line-height: 1.625;
-}body.feishu-document-layout .markdown-rendered :is(th,td) { border: 1px solid var(--doc-border); padding: 8px 12px; }body.feishu-document-layout .markdown-rendered th { background: var(--doc-code); }body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-table-widget :is(th,td) { padding: 0; }body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-table-widget .table-cell-wrapper { padding: 8px 12px; }body.feishu-document-layout .markdown-rendered a { color: var(--doc-link); text-decoration: none; }body.feishu-document-layout .markdown-rendered a:hover { text-decoration: underline; }body.feishu-document-layout .markdown-source-view.mod-cm6.is-live-preview .cm-line:has(> br:only-child) {
-  min-height: 8px;
-  line-height: 8px;
-}body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-formatting-list-ol { color: var(--doc-link); }body.feishu-document-layout .markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="x"] {
+}body.feishu-document-layout .markdown-rendered :is(th,td) { border: 1px solid var(--doc-border); padding: 8px 12px; }body.feishu-document-layout .markdown-rendered th { background: var(--doc-code); }body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-table-widget :is(th,td) { padding: 0; }body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-table-widget .table-cell-wrapper { padding: 8px 12px; }body.feishu-document-layout .markdown-rendered a { color: var(--doc-link); text-decoration: none; }body.feishu-document-layout .markdown-rendered a:hover { text-decoration: underline; }body.feishu-document-layout .markdown-source-view.mod-cm6 .cm-formatting-list-ol { color: var(--doc-link); }body.feishu-document-layout .markdown-source-view.mod-cm6 .HyperMD-task-line[data-task="x"] {
   color: var(--checklist-done-color);
   text-decoration: line-through;
 }body.feishu-document-layout .markdown-rendered .task-list-item.is-checked {
@@ -218,7 +316,4 @@ body.feishu-document-layout .markdown-source-view.mod-cm6 .feishu-quote-list .fe
 }
 body.feishu-document-layout .markdown-rendered blockquote li::before {
   color: var(--doc-muted) !important;
-}
-body.feishu-document-layout .markdown-source-view.mod-cm6.is-live-preview .feishu-empty-quote:not(.cm-active) {
-  line-height: 8px; min-height: 8px; padding-block: 0;
 }

@@ -1,10 +1,12 @@
 # Feishu Document Layout
 
-An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, ordered heading numbers, task styling, blockquotes and adjustable table columns in Live Preview and Reading view.
+An independent Obsidian plugin with document typography inspired by Feishu/Lark. It provides clear heading sizes, nested lists, ordered heading numbers, task styling, blockquotes, adjustable table columns and image rows with captions in Live Preview and Reading view.
 
 [中文说明](#中文说明) · [Example note](example.md) · [Report an issue](https://github.com/GasonW/feishu-document-layout/issues)
 
 This is a community project, unaffiliated with Feishu, Lark or Obsidian. Licensed under the [MIT License](LICENSE).
+
+This is a layout plugin that works with your selected Obsidian theme. Minimal is optional. The theme continues to style application controls and properties that the plugin does not override.
 
 ## Installation
 
@@ -20,6 +22,8 @@ This is a community project, unaffiliated with Feishu, Lark or Obsidian. License
 - **Blockquotes:** Prefix each line with `>`. Lists and their nested levels render inside the quote border.
 - **Tasks:** Use `- [ ]` and `- [x]`. Completed tasks display muted text, a strikethrough and a blue checkmark.
 - **Tables:** Tables fill the document area up to 820px. Drag a boundary between header cells to resize the neighboring columns. Double-click that boundary to restore automatic widths.
+- **Images:** Drag an image to another image's left or right to place them in one row. A blue indicator marks the destination. Drop near the top or bottom to create a separate row. Images keep their aspect ratios and share the same height. The image menu also provides left/right movement and **Move to next row**.
+- **Captions:** Hover over an image and choose **Add caption**. Enter saves, Shift+Enter adds a line, and Escape cancels. Click an existing caption to edit; clear its text to delete it. Captions move with their image.
 
 ```markdown
 # 1. Chapter
@@ -55,15 +59,19 @@ The active list or ordered heading line shows editable Markdown markers. Move th
 
 ## Data and privacy
 
-The plugin reads individual files through the Obsidian vault API to determine heading numbers. Settings and column proportions are stored in the plugin's `data.json` inside the vault. The heading-numbering command updates the current note's frontmatter. The plugin makes no network requests and does not access files outside the vault.
+The plugin reads individual files through the Obsidian vault API to determine heading numbers and image rows. Settings and column proportions are stored in the plugin's `data.json` inside the vault. The heading-numbering command updates the current note's frontmatter. Image dragging rearranges the original Markdown embeds; captions are stored beside each embed in an HTML comment containing an image ID and caption text. These changes travel with the note when it is synced. Live Preview edits use the editor's undo history.
+
+Local images are loaded through Obsidian's vault API. Images whose Markdown source uses an HTTP(S) URL load from that URL. The plugin has no telemetry or external service account and does not access files outside the vault.
 
 ## Compatibility and limitations
 
-- Verified on macOS with Obsidian 1.12.7 and Minimal: Live Preview, Reading view, outline updates, nested lists, quote/list composition and table resizing. Mobile and additional themes have not been verified.
+- Verified on macOS with Obsidian 1.12.7 and Minimal: Live Preview, Reading view, outline updates, nested lists, quote/list composition, table resizing, typing and clearing table cells, and image layout/captions. Default-theme checks cover blank-line cursor movement, clearing table cells, three-image rows and captions in both views. Mobile and additional themes have not been verified.
 - Numbering covers top-level Markdown headings of levels one through three. Fenced code and YAML do not participate.
 - Column widths are identified by the note path, table headers and the occurrence of matching headers. Editing headers or changing the column count requires resizing again. Virtual scrolling in long notes containing multiple identical table headers remains a known validation limit.
 - Outline and list styling depend on Obsidian's UI structure. Application, theme or other layout-plugin updates may require compatibility adjustments.
 - Other Markdown viewers apply their own heading-numbering and table-width rules.
+- Image rows use unindented, image-only lines with `![[image.png]]` or `![alt](image.png)` embeds. Multiple embeds on the same line form one row. Lists, quotes, tables, code, and inline images keep their native rendering. Source mode exposes the editable Markdown and caption metadata. Other Markdown readers can display the images but may not display the captions or row layout.
+- Image dragging is within the same note. Single images respect a wiki embed width such as `![[image.png|360]]`; multiple images divide the available row width according to their aspect ratios.
 
 ## Development
 
@@ -76,17 +84,17 @@ npm run build
 npm run check
 ```
 
-`plugin.js` contains the plugin entry source, `editor.js` the editor extension, and `layout.js` the Markdown parsing functions. `build.mjs` generates `dist/main.js` and copies the manifest and stylesheet into `dist/`. GitHub Actions runs tests, a build and a syntax check for pushes and pull requests.
+`plugin.js` contains the plugin entry source, `editor.js` the document editor extension, and `layout.js` the document parsing functions. `images.js` handles image Markdown edits and `image-view.js` supplies the image interaction UI. `build.mjs` generates `dist/main.js` and copies the manifest and stylesheet into `dist/`. GitHub Actions runs tests, a build and a syntax check for pushes and pull requests.
 
 Release tags match `manifest.json`. Release attachments are `dist/main.js`, `dist/manifest.json` and `dist/styles.css`.
 
 ## 中文说明
 
-为 Obsidian 提供接近飞书文档的阅读排版：清楚的标题层级、嵌套列表、任务状态、引用、高亮块，以及可调整列宽的表格。实时预览与阅读视图均支持。
-
-An independent Obsidian plugin with document typography inspired by Feishu/Lark: nested lists, heading numbers, task styling, blockquotes and resizable tables.
+为 Obsidian 提供接近飞书文档的阅读排版：清楚的标题层级、嵌套列表、任务状态、引用、高亮块、可调整列宽的表格，以及支持拖拽并排和图注的图片。实时预览与阅读视图均支持。
 
 这是独立开发的社区插件，与飞书、Lark 或 Obsidian 官方无关联。采用 [MIT 许可证](LICENSE)。
+
+它是叠加在当前 Obsidian 主题上的排版插件，Minimal 是可选主题。侧栏、应用控件，以及插件未覆盖的属性仍采用所选主题的样式。
 
 ## 使用
 
@@ -95,6 +103,8 @@ An independent Obsidian plugin with document typography inspired by Feishu/Lark:
 3. 引用行前加 `>`，内部可以继续使用列表和逐级缩进。
 4. 表格默认填满正文区域，最大 820px。拖动表头列分隔线调整相邻列比例；双击恢复默认。
 5. 已完成的任务显示灰色文字、删除线及蓝色勾选。
+6. 将图片拖到另一张的左／右侧，看到蓝色位置线后松开，即可并排；拖到上／下方则单独成行。同排图片保持等高、原始比例。图片菜单也可左右移动或移到下一行。
+7. 悬停图片后点击「添加图注」。Enter 保存，Shift+Enter 换行，Esc 取消。点击现有图注可继续修改，清空后保存即可删除。图注跟随图片移动。
 
 ```markdown
 # 1. 章节
@@ -133,23 +143,27 @@ heading-numbering: false
 需要 Node.js 20 或以上，构建使用 Node.js 内置库。
 
 ```sh
-node --test layout.test.cjs
+npm test
 node build.mjs
 node --check dist/main.js
 ```
 
-运行时使用 Obsidian 提供的 API 与 CodeMirror。插件设置及列宽保存在库内的插件 `data.json`；正文仅在主动切换单篇标题编号属性时写入。插件不发送网络请求。
+运行时使用 Obsidian 提供的 API 与 CodeMirror。插件设置及列宽保存在库内的插件 `data.json`。切换单篇编号属性会写入 frontmatter；拖动图片会调整原有 Markdown 图片的位置；图注及图片标识保存在紧随图片的 HTML 注释中，随笔记同步。实时预览中的修改进入编辑器撤销历史。
+
+本地图片通过 Obsidian 库 API 加载，HTTP(S) 图片按正文中的原地址加载。插件不收集遥测，不需要外部服务账号，也不读取库外文件。
 
 ## 验证范围与边界
 
-- 已在 macOS、Obsidian 1.12.7、Minimal 主题核对实时预览、阅读视图、大纲、三级列表与引用叠加。移动端尚待实机验证。
+- 已在 macOS、Obsidian 1.12.7、Minimal 主题核对实时预览、阅读视图、大纲、三级列表与引用叠加、表格列宽、输入后清空单元格，以及图片排版与图注。默认主题已核对空行光标移动、清空单元格，以及两种视图的三图并排和图注。移动端尚待实机验证。
 - 标题编号支持文档顶层一至三级 Markdown 标题；代码围栏、YAML 不参与编号。源码模式显示原始 Markdown。
 - 列宽按笔记路径、表头内容与同表头表格的次序记录。修改表头或列数后需要重新调整。长文中多张同表头表格的虚拟滚动定位仍需专项验证。
 - 大纲及列表样式依赖 Obsidian 的界面结构；应用或主题升级后需复验。其他主题或排版插件的同名样式可能需要协调。
 - 在其他 Markdown 阅读器中，标题编号和列宽由对方的显示规则决定。
+- 图片排版适用于没有缩进、仅包含图片的行，支持 `![[图片.png]]` 和 `![说明](图片.png)`。同一行的多张图片组成一排。列表、引用、表格、代码与正文行内图片采用原生渲染。源码模式可编辑图片语法和图注元数据；其他 Markdown 阅读器可以显示原图片，但未必支持图注及并排样式。
+- 拖拽范围为同一篇笔记。单图遵循 `![[图片.png|360]]` 这样的宽度设置；多图按原始宽高比分配正文区宽度。
 
 ## 开发与发布
 
-入口源码为 `plugin.js`，编辑器扩展为 `editor.js`，纯 Markdown 解析逻辑为 `layout.js`。`build.mjs` 生成 `dist/main.js`，并复制 manifest 与样式文件。
+入口源码为 `plugin.js`，文档编辑器扩展为 `editor.js`，文档解析为 `layout.js`；图片解析及正文修改为 `images.js`，交互界面为 `image-view.js`。`build.mjs` 生成 `dist/main.js`，并复制 manifest 与样式文件。
 
 每个 Release 的标签与 manifest 版本一致，附件为 `dist/main.js`、`dist/manifest.json`、`dist/styles.css`。GitHub Actions 在提交及 Pull Request 上运行测试与构建检查。
